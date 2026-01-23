@@ -23,6 +23,8 @@ This tool is designed for 'Heartbeat Town' players, automatically converting upl
 
 [Website Link | 網頁連結](https://zerochansy.github.io/Heartopia-Painting-Tools/) \
 \
+![image](https://github.com/zerochansy/Heartopia-Painting-Tools/blob/main/assets/preview/preview.jpg)
+\
 ✅ Recommended to use the desktop version for the best experience.\
 ✅ All image processing is done locally on your device; no images are uploaded to any server, and no AI programs are used. Feel free to use your personal photos.\
 \
