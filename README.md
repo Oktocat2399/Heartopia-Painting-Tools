@@ -1,11 +1,11 @@
-# Heartopia Painting Tools | 心動小鎮繪畫工具
+# ❤️ Heartopia Painting Tools | 心動小鎮繪畫工具
 
-## Tool Introduction | 工具介紹
+## 👉 Tool Introduction | 工具介紹
 
 This tool is designed for 'Heartbeat Town' players, automatically converting uploaded images into pixel art format suitable for in-game painting, helping players easily create pixel-style artworks. When the developer reached level 14 in the game, they experienced the challenges of painting within the game firsthand, which inspired the creation of this program to help other art-loving players create more easily.\
 本工具專為《心動小鎮》玩家設計，能將上傳的圖片自動轉換為遊戲內繪畫適用的點陣圖格式，幫助玩家輕鬆創作像素風格畫作。開發者剛升級至遊戲14級時，深感在遊戲內繪畫的挑戰，因而開發此程式，希望幫助同樣喜愛繪畫的玩家更輕鬆地創作。
 
-## Main Features | 主要功能
+## 👉 Main Features | 主要功能
 
 - Multiple Image Ratios: Supports common ratios like 16:9, 4:3, 1:1, 3:4, 9:16
 - Detail Level Selection: Four precision levels to meet different painting needs
@@ -19,7 +19,7 @@ This tool is designed for 'Heartbeat Town' players, automatically converting upl
 - 繪畫輔助工具：內置網格顯示與滴管工具，便於對照與細節調整
 - 新手友好：提供分步教程，協助初學者快速上手
 
-## Usage Instructions | 使用說明
+## 👉 Usage Instructions | 使用說明
 
 ✅ Recommended to use the desktop version for the best experience.\
 ✅ All image processing is done locally on your device; no images are uploaded to any server, and no AI programs are used. Feel free to use your personal photos.\
@@ -27,7 +27,7 @@ This tool is designed for 'Heartbeat Town' players, automatically converting upl
 ✅ 建議使用電腦版本以獲得最佳體驗效果。\
 ✅ 本工具所有圖片處理均在本地進行，不會上傳至任何伺服器，亦不使用任何AI程序，請放心使用個人相片。
 
-## About the Developer | 關於開發者
+## 👉 About the Developer | 關於開發者
 
 
 The developer is a designer and game developer, and also a dedicated 'Heartbeat Town' player. Welcome to visit and like my game island!\
