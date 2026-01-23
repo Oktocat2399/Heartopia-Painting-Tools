@@ -45,4 +45,4 @@ Your support gives the developer more motivation～\
 給予開發者更多的動力～\
 \
 👉 WeChat Pay | 微信支付 \
-![image](https://github.com/zerochansy/Heartopia-Painting-Tools/assets/images/wechat_pay.jpg)
+![image](https://github.com/zerochansy/Heartopia-Painting-Tools/blob/main/assets/images/wechat_pay.jpg)
