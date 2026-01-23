@@ -116,6 +116,7 @@ img {
     align-items: center;
     justify-content: center;
     height: calc(60px * var(--scale));
+    width: calc(60px * var(--scale));
     margin-left: calc(20px * var(--scale));
 }
 
@@ -353,6 +354,7 @@ html[lang="en"] .title-bar h1 {
     color: #FFFFFF;
     font-family: 'Chiron GoRound TC', sans-serif;
     font-weight: 700;
+    font-size: calc(36px * var(--scale));
     cursor: pointer;
     transition: all 0.3s;
     flex-shrink: 0;
@@ -360,6 +362,9 @@ html[lang="en"] .title-bar h1 {
     bottom: 0%;
     left: 50%;
     transform: translate(-50%, 20%);
+}
+html[lang="en"] .btn-next {
+    font-size: calc(24px * var(--scale));
 }
 
 .btn-next:hover:not(:disabled) {
@@ -446,11 +451,9 @@ html[lang="en"] .title-bar h1 {
     gap: calc(30px * var(--scale));
 }
 
-.loading-icon {
-    width: calc(80px * var(--scale));
-    height: calc(80px * var(--scale));
-    color: var(--text-color);
-    animation: spin 2s linear infinite;
+#loading-icon svg {
+    width: calc(200px * var(--scale));
+    height: calc(200px * var(--scale));
 }
 
 @keyframes spin {

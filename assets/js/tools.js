@@ -21,8 +21,39 @@ const tools = {
         this.setupToolButtons();
         this.setupTutorial();
 
+        // Ensure picker state and add iOS safety resets
+        this.ensurePickerSafety();
+
         try { localStorage.setItem('tutorial_last_step', 0); } catch (err) {}
         // setupColorPanel() will be called from app.js after colors are loaded
+    },
+
+    /**
+     * Ensure eyedropper is disabled and canvas cursor is correct.
+     * Adds touch/pointer listeners to reset the picker when the pick tool isn't active (fixes iOS stuck-picker issue).
+     */
+    ensurePickerSafety() {
+        this.eyedropperActive = false;
+        const canvas = document.getElementById('paint-canvas');
+        if (canvas) canvas.style.cursor = 'grab';
+
+        const resetIfNotActive = () => {
+            const pickBtn = document.getElementById('tool-pick');
+            const isActive = pickBtn && pickBtn.classList.contains('active');
+            if (!isActive) {
+                this.eyedropperActive = false;
+                if (canvas) canvas.style.cursor = 'grab';
+                // ensure button not visually active
+                if (pickBtn) pickBtn.classList.remove('active');
+                try { if (pickBtn && pickBtn.querySelector('svg')) pickBtn.querySelector('svg').style.fill = '#713F3E'; } catch (e) {}
+            }
+        };
+
+        // On touchstart/pointerdown, if the pick tool button isn't active, force picker off.
+        document.addEventListener('touchstart', resetIfNotActive, { passive: true });
+        document.addEventListener('pointerdown', resetIfNotActive, { passive: true });
+        // Also listen for visibility change to reset state when coming back
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) resetIfNotActive(); });
     },
 
     /**
@@ -246,20 +277,8 @@ const tools = {
 
             embedExternalSVG('assets/images/icon_color.svg', `color-detail-item-${index}`);
 
-            // Wait for SVG to load before setting color
-            setTimeout(() => {
-                const colorDisplay = document.querySelector(`#color-detail-item-${index}.color-display svg g[data-name="Group 11"] > path:nth-child(2)`);
-                if (colorDisplay) {
-                    colorDisplay.setAttribute('fill', color);
-                }
-                
-                // Check if this is the currently selected color
-                const isSelected = color.toLowerCase() === app.state.currentColor.toLowerCase();
-                const colorDisplayBg = document.querySelector(`#color-detail-item-${index}.color-display svg g[data-name="Group 11"] > path:nth-child(1)`);
-                if (colorDisplayBg) {
-                    colorDisplayBg.setAttribute('fill', isSelected ? '#FFFFFF' : 'transparent');
-                }
-            }, 10);
+            // Update SVG colors; use a retry loop because SVG injection may be asynchronous
+            this.updateColorSVG(index, color);
         });
     },
 
@@ -291,6 +310,72 @@ const tools = {
         if (tutorialColorFill) {
             tutorialColorFill.setAttribute('fill', currentColor);
         }
+    },
+
+    /**
+     * Update injected SVG color for a specific color-detail item.
+     * Uses retries to wait for the SVG to be present (helps on iOS/Safari).
+     */
+    updateColorSVG(containerIndex, color) {
+        const maxAttempts = 40; // ~2 seconds at 50ms interval
+        const delay = 50;
+        let attempts = 0;
+
+        const tryUpdate = () => {
+            attempts++;
+            const container = document.getElementById(`color-detail-item-${containerIndex}`);
+            if (!container) {
+                if (attempts < maxAttempts) return setTimeout(tryUpdate, delay);
+                return;
+            }
+
+            const svg = container.querySelector('svg');
+            if (!svg) {
+                if (attempts < maxAttempts) return setTimeout(tryUpdate, delay);
+                return;
+            }
+
+            try {
+                // Prefer explicit paths if available; fall back to path index
+                let fillPath = null;
+                let bgPath = null;
+
+                // Try to find meaningful group/paths first
+                const group11 = svg.querySelector('g[data-name="Group 11"]');
+                if (group11) {
+                    const paths = group11.querySelectorAll('path');
+                    if (paths.length >= 2) {
+                        bgPath = paths[0];
+                        fillPath = paths[1];
+                    }
+                }
+
+                // Fallback to generic path list
+                if (!fillPath) {
+                    const allPaths = svg.querySelectorAll('path');
+                    if (allPaths.length >= 2) {
+                        bgPath = allPaths[0];
+                        fillPath = allPaths[1];
+                    } else if (allPaths.length === 1) {
+                        fillPath = allPaths[0];
+                    }
+                }
+
+                if (fillPath) {
+                    fillPath.setAttribute('fill', color);
+                }
+
+                const isSelected = (color || '').toLowerCase() === (app.state.currentColor || '').toLowerCase();
+                if (bgPath) {
+                    bgPath.setAttribute('fill', isSelected ? '#FFFFFF' : 'transparent');
+                }
+            } catch (err) {
+                // If something fails, retry a few times
+                if (attempts < maxAttempts) return setTimeout(tryUpdate, delay);
+            }
+        };
+
+        tryUpdate();
     },
 
     /**

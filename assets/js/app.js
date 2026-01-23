@@ -442,3 +442,7 @@ gameIdElement.addEventListener('click', function() {
 });
 gameIdElement.style.cursor = 'pointer';
 gameIdElement.title = '點擊複製遊戲ID';
+
+$("div").click(function(e){
+    
+});

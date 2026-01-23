@@ -214,10 +214,10 @@ const canvas = {
         element.addEventListener('wheel', (e) => this.handleWheel(e));
         element.addEventListener('contextmenu', (e) => e.preventDefault());
 
-        // Touch events
-        element.addEventListener('touchstart', (e) => this.handleTouchStart(e));
-        element.addEventListener('touchmove', (e) => this.handleTouchMove(e));
-        element.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+        // Touch events (use non-passive so we can preventDefault and control scrolling)
+        element.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+        element.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+        element.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
 
         // Zoom slider
         const zoomSlider = document.getElementById('zoom-slider');
@@ -317,16 +317,28 @@ const canvas = {
      * Handle touch start
      */
     handleTouchStart(e) {
+        if (!e.touches || e.touches.length === 0) return;
+
         const touch = e.touches[0];
         const pos = this.getCanvasCoords(touch.clientX, touch.clientY);
         const x = pos.x;
         const y = pos.y;
 
         if (e.touches.length === 1) {
-            // Single touch
+            // Single touch: if eyedropper is active, pick color; otherwise start dragging (pan)
             const gridPos = this.getGridPosition(x, y);
-            if (gridPos) {
-                this.pickColor(gridPos.x, gridPos.y);
+            if (window.tools && window.tools.eyedropperActive) {
+                if (gridPos) {
+                    e.preventDefault();
+                    this.pickColor(gridPos.x, gridPos.y);
+                }
+            } else {
+                // Start dragging for one-finger pan
+                e.preventDefault();
+                this.properties.isDragging = true;
+                this.properties.dragStartX = x;
+                this.properties.dragStartY = y;
+                this.properties.element.style.cursor = 'grabbing';
             }
         }
     },
@@ -335,16 +347,48 @@ const canvas = {
      * Handle touch move
      */
     handleTouchMove(e) {
+        if (!e.touches || e.touches.length === 0) return;
+
         if (e.touches.length === 2) {
-            // Two finger - zoom
+            // Two finger - zoom (placeholder: prevent default)
+            e.preventDefault();
             const touch1 = e.touches[0];
             const touch2 = e.touches[1];
             const dist = Math.hypot(
                 touch1.clientX - touch2.clientX,
                 touch1.clientY - touch2.clientY
             );
-            
-            // Implement pinch zoom
+            // Pinch zoom can be implemented here if desired
+        } else if (e.touches.length === 1) {
+            const touch = e.touches[0];
+            const pos = this.getCanvasCoords(touch.clientX, touch.clientY);
+            const x = pos.x;
+            const y = pos.y;
+
+            // If eyedropper active, update highlight; otherwise handle panning
+            if (window.tools && window.tools.eyedropperActive) {
+                const gridPos = this.getGridPosition(x, y);
+                this.properties.highlightGridPos = gridPos;
+                this.properties.element.style.cursor = 'crosshair';
+                e.preventDefault();
+                this.draw();
+                return;
+            }
+
+            if (this.properties.isDragging) {
+                e.preventDefault();
+                const dx = x - this.properties.dragStartX;
+                const dy = y - this.properties.dragStartY;
+
+                this.properties.offsetX += dx;
+                this.properties.offsetY += dy;
+
+                this.properties.dragStartX = x;
+                this.properties.dragStartY = y;
+
+                this.clampOffsets();
+                this.draw();
+            }
         }
     },
 
@@ -352,7 +396,19 @@ const canvas = {
      * Handle touch end
      */
     handleTouchEnd(e) {
-        // Handle touch end
+        // End dragging or eyedropper highlight
+        if (this.properties.isDragging) {
+            this.properties.isDragging = false;
+            if (window.tools && !window.tools.eyedropperActive) {
+                this.properties.element.style.cursor = 'grab';
+            }
+        }
+
+        // Clear highlight when touch ends if not in eyedropper mode
+        if (!window.tools || !window.tools.eyedropperActive) {
+            this.properties.highlightGridPos = null;
+            this.draw();
+        }
     },
 
     /**
