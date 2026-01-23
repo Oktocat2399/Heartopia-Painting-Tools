@@ -59,8 +59,8 @@ html[lang="en"] body {
 
 /* Main App Container */
 .app-container {
-    width: calc(100dvh * 16 / 9);
-    height: calc(100dvw * 9 / 16);
+    width: min(100dvw, calc(100dvh * 16 / 9));
+    height: min(100dvh, calc(100dvw * 9 / 16));
     display: flex;
     justify-content: center;
     align-items: center;
