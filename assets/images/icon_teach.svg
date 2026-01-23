@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="0 0 40 40">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_50" data-name="Rectangle 50" width="40" height="40" transform="translate(-4 4103)" fill="#fff" stroke="#707070" stroke-width="1"/>
+    </clipPath>
+  </defs>
+  <g id="icon_teach" transform="translate(4 -4103)" clip-path="url(#clip-path)">
+    <g id="preview-50" transform="translate(-5.742 3935.138)">
+      <path id="Path_21" data-name="Path 21" d="M292.339,283.64a8.7,8.7,0,1,1-8.7-8.7A8.7,8.7,0,0,1,292.339,283.64Zm-8.7-2.485a2.486,2.486,0,1,0-2.487,2.485A2.486,2.486,0,0,0,283.641,281.154Z" transform="translate(-262.058 -96.351)" fill="#713f3e"/>
+      <path id="Path_22" data-name="Path 22" d="M39.735,190.678c-5.369,6.446-11.382,9.718-17.993,9.718s-12.625-3.272-17.993-9.718a4.35,4.35,0,0,1,.063-5.641c5.879-6.747,11.857-10.175,17.93-10.175s12.05,3.429,17.93,10.175a4.351,4.351,0,0,1,.063,5.641ZM37.8,186.67c-5.448-6.252-10.8-9.323-16.056-9.323s-10.606,3.071-16.056,9.324a1.863,1.863,0,0,0-.027,2.417c4.925,5.915,10.271,8.823,16.083,8.823S32.9,195,37.825,189.088a1.864,1.864,0,0,0-.027-2.418Z" fill="#713f3e"/>
+    </g>
+  </g>
+</svg>

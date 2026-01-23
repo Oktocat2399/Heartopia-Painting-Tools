@@ -1,0 +1,106 @@
+/* ============================================
+   RESPONSIVE DESIGN - Based on 1920x1080
+   ============================================ */
+
+
+@media (max-width: 768px) {
+    
+    .paint-container {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+    
+    .color-panel {
+        width: 100% !important;
+        max-width: calc(100vw - 40px);
+        height: auto !important;
+    }
+    
+    .canvas-wrapper {
+        width: 100%;
+        height: auto;
+    }
+    
+    .tutorial-panel {
+        width: auto !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+}
+
+/* Prevent layout shift on scrollbar */
+html {
+    overflow-y: scroll;
+}
+
+/* Better touch targets on mobile */
+@media (hover: none) and (pointer: coarse) {
+    .btn-next,
+    .lang-option,
+    .tool-btn,
+    .tut-btn {
+        min-height: calc(50px * var(--scale));
+        min-width: calc(50px * var(--scale));
+    }
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: white;
+    }
+    
+    .lang-btn,
+    .info-btn,
+    .paint-header {
+        display: none;
+    }
+}
+
+/* High DPI screen optimization */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    #paint-canvas {
+        image-rendering: crisp-edges;
+        image-rendering: pixelated;
+    }
+}
+
+/* Landscape vs Portrait optimization */
+@media (orientation: portrait) {
+    .step {
+        aspect-ratio: auto;
+    }
+    
+    .paint-container {
+        flex-direction: column;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-blend-mode: overlay;
+    }
+    
+    .popup-overlay {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Large screen optimization */
+@media (min-width: 2560px) {
+    :root {
+        --scale: calc(100vw / 1920 * 1.2);
+    }
+}
