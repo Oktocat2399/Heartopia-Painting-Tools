@@ -2,7 +2,7 @@
 
 ## 👉 Tool Introduction | 工具介紹
 
-This tool is designed for 'Heartbeat Town' players, automatically converting uploaded images into pixel art format suitable for in-game painting, helping players easily create pixel-style artworks. When the developer reached level 14 in the game, they experienced the challenges of painting within the game firsthand, which inspired the creation of this program to help other art-loving players create more easily.\
+This tool is designed for Heartopia players, automatically converting uploaded images into pixel art format suitable for in-game painting, helping players easily create pixel-style artworks. When the developer reached level 14 in the game, they experienced the challenges of painting within the game firsthand, which inspired the creation of this program to help other art-loving players create more easily.\
 本工具專為《心動小鎮》玩家設計，能將上傳的圖片自動轉換為遊戲內繪畫適用的點陣圖格式，幫助玩家輕鬆創作像素風格畫作。開發者剛升級至遊戲14級時，深感在遊戲內繪畫的挑戰，因而開發此程式，希望幫助同樣喜愛繪畫的玩家更輕鬆地創作。
 
 ## 👉 Main Features | 主要功能
