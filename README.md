@@ -48,5 +48,7 @@ Your support gives the developer more motivation～\
 如果覺得工具對你有幫助，歡迎打賞支持開發者～\
 給予開發者更多的動力～\
 \
+👉 Paypal\
+[My Paypal Account](https://www.paypal.com/paypalme/zerochansy)\
 👉 WeChat Pay | 微信支付 \
 ![image](https://github.com/zerochansy/Heartopia-Painting-Tools/blob/main/assets/images/wechat_pay.jpg)

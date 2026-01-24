@@ -994,6 +994,10 @@ body.no-scroll {
     padding: 20px 20px;
 }
 
+.donation a{
+    text-decoration: none;
+}
+
 @media (orientation: portrait) {
     .portrait-warning {
         width: 100dvw;
