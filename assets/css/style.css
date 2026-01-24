@@ -957,3 +957,56 @@ body.no-scroll {
     right: calc(10px * var(--scale));
     text-shadow: calc(1px * var(--scale)) calc(1px * var(--scale)) calc(2px * var(--scale)) rgba(0, 0, 0, 0.5);
 }
+
+
+.portrait-warning {
+    display: none; 
+}
+.warning-icon {
+    max-width: 80%;
+    margin-top: 20px;
+}
+.warning-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 80%;
+}
+.rotateMessageTop, .rotateMessageBottom {
+    width: fit-content;
+    padding: 10px 20px;
+    background-color: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    text-align: center;
+}
+
+.rotateMessageBottom {
+    position: absolute;
+    bottom: 0%;
+    left: 0%;
+    width: 100%;
+    border-radius: 20px 20px 0 0 ;
+    padding: 20px 20px;
+}
+
+@media (orientation: portrait) {
+    .portrait-warning {
+        width: 100dvw;
+        height: 100dvh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex; 
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .app-container {
+        display: none !important;
+    }
+}

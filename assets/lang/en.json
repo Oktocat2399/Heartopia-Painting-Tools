@@ -36,5 +36,7 @@
     "donationTitle": "❤️ Support the Developer",
     "donationDesc": "If you find this tool helpful, consider supporting the developer with a donation～\nYour support gives the developer more motivation～",
     "copiedText": "Copied",
-    "wechatDonation": "👉 WeChat Pay (Click image to view payment QR code)"
+    "wechatDonation": "👉 WeChat Pay (Click image to view payment QR code)",
+    "rotateMessageTop": "Please rotate your device to landscape mode",
+    "rotateMessageBottom": "Recommended to use the computer version for the best experience"
 }

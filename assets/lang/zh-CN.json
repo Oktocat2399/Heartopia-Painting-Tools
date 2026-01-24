@@ -36,5 +36,7 @@
     "donationTitle": "❤️ 支持开发者",
     "donationDesc": "如果觉得工具对你有帮助，欢迎打赏支持开发者～\n给予开发者更多的动力～",
     "copiedText": "已复制",
-    "wechatDonation": "👉 微信支付 (点击图片可查看收款码)"
+    "wechatDonation": "👉 微信支付 (点击图片可查看收款码)",
+    "rotateMessageTop": "请旋转您的装置至横向",
+    "rotateMessageBottom": "建议使用电脑版本以获得最佳体验效果"
 }
