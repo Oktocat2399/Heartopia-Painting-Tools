@@ -52,3 +52,14 @@ Your support gives the developer more motivation～\
 [My Paypal Account](https://www.paypal.com/paypalme/zerochansy)\
 👉 WeChat Pay | 微信支付 \
 ![image](https://github.com/zerochansy/Heartopia-Painting-Tools/blob/main/assets/images/wechat_pay.jpg)
+
+
+## Change Log
+
+v1.0.6 - 20260204\
+- Remove the transparent color
+- Prevent the color load twice
+- Fix bug
+\
+v1.0.5 - 20260124\
+- Fix bug

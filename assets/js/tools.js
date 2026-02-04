@@ -275,7 +275,13 @@ const tools = {
 
             detailsContainer.appendChild(colorItem);
 
-            embedExternalSVG('assets/images/icon_color.svg', `color-detail-item-${index}`);
+            // Avoid duplicating the injected SVG. If an SVG is already present
+            // or we've previously started loading it, skip embedding again.
+            const existingSvg = colorItem.querySelector('svg');
+            if (!existingSvg && colorItem.dataset.svgLoading !== 'true' && colorItem.dataset.svgInitialized !== 'true') {
+                colorItem.dataset.svgLoading = 'true';
+                embedExternalSVG('assets/images/icon_color.svg', `color-detail-item-${index}`);
+            }
 
             // Update SVG colors; use a retry loop because SVG injection may be asynchronous
             this.updateColorSVG(index, color);
@@ -334,6 +340,12 @@ const tools = {
                 if (attempts < maxAttempts) return setTimeout(tryUpdate, delay);
                 return;
             }
+
+            // Mark that the SVG is present/initialized so we don't re-inject it later
+            try {
+                container.dataset.svgInitialized = 'true';
+                if (container.dataset.svgLoading) delete container.dataset.svgLoading;
+            } catch (e) {}
 
             try {
                 // Prefer explicit paths if available; fall back to path index
