@@ -37,7 +37,7 @@ This tool is designed for Heartopia players, automatically converting uploaded i
 The developer is a designer and game developer, and also a dedicated 'Heartbeat Town' player. Welcome to visit and like my game island!\
 開發者是一名設計師兼遊戲開發者，也是《心動小鎮》的忠實玩家。歡迎來我的遊戲小島點讚！\
 \
-Game ID | 遊戲ID - 162hkm95\
+Game ID | 遊戲ID - 162hkm95 (TW/HK/MO)\
 [Instagram](https://www.instagram.com/zerochansy) [LinkedIn](https://www.linkedin.com/in/zerochansy/)
 
 
@@ -56,10 +56,10 @@ Your support gives the developer more motivation～\
 
 ## Change Log
 
-v1.0.6 - 20260204\
+v1.0.6 - 20260204
 - Remove the transparent color
 - Prevent the color load twice
 - Fix bug
-\
-v1.0.5 - 20260124\
+
+v1.0.5 - 20260124
 - Fix bug
