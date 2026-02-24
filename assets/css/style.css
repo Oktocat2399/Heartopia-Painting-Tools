@@ -22,7 +22,7 @@
     
     /* Scale factor: actual-width / design-width */
     /* E.g., if container is 1280px, scale = 1280/1920 = 0.667 */
-    --scale: calc(var(--container-width) / (var(--design-width) * 1px));
+    --scale: tan(atan2(var(--container-width), var(--design-width) * 1px));
 }
 
 * {
