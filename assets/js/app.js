@@ -186,58 +186,263 @@ const app = {
     },
 
     /**
-     * Show crop modal to allow user to crop uploaded image to selected aspect ratio
+     * Show interactive crop UI to allow user to pan & zoom the image
      */
     autoCropCenter(imageData) {
         const dims = this.gridDimensions[this.state.selectedRatio][this.state.selectedLevel];
         const gridW = dims[0];
         const gridH = dims[1];
+        const desiredAspect = gridW / gridH;
 
         const img = new Image();
         img.onload = () => {
+            // Store original image for cropper
+            this.state._cropImg = img;
+            this.state._cropGridW = gridW;
+            this.state._cropGridH = gridH;
+            this.state._cropAspect = desiredAspect;
+
+            // Calculate initial fit (same as old center-crop logic)
             const nw = img.naturalWidth;
             const nh = img.naturalHeight;
-            const desiredAspect = gridW / gridH;
-
-            let sx, sy, sw, sh;
             const imgAspect = nw / nh;
+
+            // Initial scale: fit so crop area is filled
+            let initScale;
             if (imgAspect > desiredAspect) {
-                // image is wider: use full height, crop sides
-                sh = nh;
-                sw = Math.round(sh * desiredAspect);
-                sx = Math.round((nw - sw) / 2);
-                sy = 0;
+                initScale = 1; // height-limited
             } else {
-                // image is taller: use full width, crop top/bottom
-                sw = nw;
-                sh = Math.round(sw / desiredAspect);
-                sx = 0;
-                sy = Math.round((nh - sh) / 2);
+                initScale = 1; // width-limited
             }
 
-            // Create high-resolution cropped image (preserve original quality)
-            const highCanvas = document.createElement('canvas');
-            highCanvas.width = sw;
-            highCanvas.height = sh;
-            const hctx = highCanvas.getContext('2d');
-            hctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
-            const highResData = highCanvas.toDataURL('image/png');
+            this.state._cropScale = initScale;
+            this.state._cropMinScale = 0.1;
+            this.state._cropMaxScale = 5;
+            // Offset in image-space (0,0 = center)
+            this.state._cropOffsetX = 0;
+            this.state._cropOffsetY = 0;
 
-            // Create grid-sized image for processing (low-res)
-            const gridCanvas = document.createElement('canvas');
-            gridCanvas.width = gridW;
-            gridCanvas.height = gridH;
-            const gctx = gridCanvas.getContext('2d');
-            gctx.drawImage(img, sx, sy, sw, sh, 0, 0, gridW, gridH);
-            const gridData = gridCanvas.toDataURL('image/png');
-
-            // Use the low-res image for processing, but show the high-res preview
-            this.state.uploadedImage = gridData;
-            this.state.uploadedImagePreview = highResData;
-            this.displayImagePreview(highResData);
+            this.showCropPreview();
             this.enableNextButton();
         };
         img.src = imageData;
+    },
+
+    /**
+     * Show the crop preview with pan/zoom controls
+     */
+    showCropPreview() {
+        const uploadArea = document.getElementById('upload-area');
+        const imagePreview = document.getElementById('image-preview');
+
+        uploadArea.style.display = 'none';
+        imagePreview.classList.remove('hidden');
+
+        const img = this.state._cropImg;
+        const aspect = this.state._cropAspect;
+
+        // Build crop UI
+        imagePreview.innerHTML = `
+            <div class="crop-container" id="crop-container">
+                <canvas id="crop-canvas"></canvas>
+            </div>
+            <div class="crop-controls" id="crop-controls">
+                <input type="range" id="crop-zoom" min="10" max="500" value="100" step="1">
+                <span id="crop-zoom-label">100%</span>
+            </div>
+        `;
+
+        const container = document.getElementById('crop-container');
+        const canvas = document.getElementById('crop-canvas');
+        const ctx = canvas.getContext('2d');
+        const zoomSlider = document.getElementById('crop-zoom');
+        const zoomLabel = document.getElementById('crop-zoom-label');
+
+        // Size the canvas to fit the preview area
+        const previewRect = imagePreview.getBoundingClientRect();
+        let cw, ch;
+        if (previewRect.width / previewRect.height > aspect) {
+            ch = previewRect.height * 0.85;
+            cw = ch * aspect;
+        } else {
+            cw = previewRect.width * 0.95;
+            ch = cw / aspect;
+        }
+        canvas.width = Math.round(cw);
+        canvas.height = Math.round(ch);
+        canvas.style.width = canvas.width + 'px';
+        canvas.style.height = canvas.height + 'px';
+
+        const nw = img.naturalWidth;
+        const nh = img.naturalHeight;
+        const imgAspect = nw / nh;
+
+        // Base scale: when zoom=100%, the image fills the crop area (cover mode)
+        let baseScale;
+        if (imgAspect > aspect) {
+            baseScale = canvas.height / nh;
+        } else {
+            baseScale = canvas.width / nw;
+        }
+
+        let scale = baseScale;
+        let offsetX = 0;
+        let offsetY = 0;
+        let dragging = false;
+        let dragStartX, dragStartY, dragOffsetX, dragOffsetY;
+
+        const clampOffset = () => {
+            const drawW = nw * scale;
+            const drawH = nh * scale;
+            const maxOX = Math.max(0, (drawW - canvas.width) / 2);
+            const maxOY = Math.max(0, (drawH - canvas.height) / 2);
+            offsetX = Math.max(-maxOX, Math.min(maxOX, offsetX));
+            offsetY = Math.max(-maxOY, Math.min(maxOY, offsetY));
+        };
+
+        const draw = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const drawW = nw * scale;
+            const drawH = nh * scale;
+            const dx = (canvas.width - drawW) / 2 + offsetX;
+            const dy = (canvas.height - drawH) / 2 + offsetY;
+            ctx.drawImage(img, dx, dy, drawW, drawH);
+        };
+
+        // Initial draw
+        draw();
+
+        // Zoom slider
+        zoomSlider.addEventListener('input', (e) => {
+            const pct = parseInt(e.target.value);
+            scale = baseScale * (pct / 100);
+            zoomLabel.textContent = pct + '%';
+            clampOffset();
+            draw();
+            this.updateCropResult();
+        });
+
+        // Mouse drag
+        canvas.addEventListener('mousedown', (e) => {
+            dragging = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            dragOffsetX = offsetX;
+            dragOffsetY = offsetY;
+            canvas.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging) return;
+            offsetX = dragOffsetX + (e.clientX - dragStartX);
+            offsetY = dragOffsetY + (e.clientY - dragStartY);
+            clampOffset();
+            draw();
+        });
+        window.addEventListener('mouseup', () => {
+            if (dragging) {
+                dragging = false;
+                canvas.style.cursor = 'grab';
+                this.updateCropResult();
+            }
+        });
+
+        // Touch drag
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                dragging = true;
+                dragStartX = e.touches[0].clientX;
+                dragStartY = e.touches[0].clientY;
+                dragOffsetX = offsetX;
+                dragOffsetY = offsetY;
+                e.preventDefault();
+            }
+        }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => {
+            if (!dragging || e.touches.length !== 1) return;
+            offsetX = dragOffsetX + (e.touches[0].clientX - dragStartX);
+            offsetY = dragOffsetY + (e.touches[0].clientY - dragStartY);
+            clampOffset();
+            draw();
+            e.preventDefault();
+        }, { passive: false });
+        canvas.addEventListener('touchend', () => {
+            if (dragging) {
+                dragging = false;
+                this.updateCropResult();
+            }
+        });
+
+        // Mouse wheel zoom
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            let pct = parseInt(zoomSlider.value);
+            pct += e.deltaY < 0 ? 10 : -10;
+            pct = Math.max(10, Math.min(500, pct));
+            zoomSlider.value = pct;
+            scale = baseScale * (pct / 100);
+            zoomLabel.textContent = pct + '%';
+            clampOffset();
+            draw();
+            this.updateCropResult();
+        }, { passive: false });
+
+        canvas.style.cursor = 'grab';
+
+        // Store references for crop extraction
+        this.state._cropCanvas = canvas;
+        this.state._cropBaseScale = baseScale;
+        this.state._cropGetParams = () => ({ scale, offsetX, offsetY, baseScale, nw, nh, canvas });
+
+        // Initial crop result
+        this.updateCropResult();
+    },
+
+    /**
+     * Extract cropped image data from current pan/zoom state
+     */
+    updateCropResult() {
+        const { scale, offsetX, offsetY, baseScale, nw, nh, canvas } = this.state._cropGetParams();
+        const img = this.state._cropImg;
+        const gridW = this.state._cropGridW;
+        const gridH = this.state._cropGridH;
+
+        // Calculate source rect in image coordinates
+        const drawW = nw * scale;
+        const drawH = nh * scale;
+        const dx = (canvas.width - drawW) / 2 + offsetX;
+        const dy = (canvas.height - drawH) / 2 + offsetY;
+
+        // Visible area in image coordinates
+        const sx = Math.max(0, -dx / scale);
+        const sy = Math.max(0, -dy / scale);
+        const visibleW = Math.min(nw - sx, canvas.width / scale);
+        const visibleH = Math.min(nh - sy, canvas.height / scale);
+
+        // Crop the visible portion
+        const sw = canvas.width / scale;
+        const sh = canvas.height / scale;
+        const cropSx = ((-dx) / scale);
+        const cropSy = ((-dy) / scale);
+
+        // High-res cropped
+        const highCanvas = document.createElement('canvas');
+        highCanvas.width = Math.round(sw);
+        highCanvas.height = Math.round(sh);
+        const hctx = highCanvas.getContext('2d');
+        hctx.drawImage(img, cropSx, cropSy, sw, sh, 0, 0, sw, sh);
+        const highResData = highCanvas.toDataURL('image/png');
+
+        // Grid-sized for processing
+        const gridCanvas = document.createElement('canvas');
+        gridCanvas.width = gridW;
+        gridCanvas.height = gridH;
+        const gctx = gridCanvas.getContext('2d');
+        gctx.drawImage(img, cropSx, cropSy, sw, sh, 0, 0, gridW, gridH);
+        const gridData = gridCanvas.toDataURL('image/png');
+
+        this.state.uploadedImage = gridData;
+        this.state.uploadedImagePreview = highResData;
     },
 
     /**
