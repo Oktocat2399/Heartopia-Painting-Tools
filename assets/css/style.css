@@ -22,7 +22,7 @@
     
     /* Scale factor: actual-width / design-width */
     /* E.g., if container is 1280px, scale = 1280/1920 = 0.667 */
-    --scale: calc(var(--container-width) / 1920);
+    --scale: tan(atan2(var(--container-width), var(--design-width) * 1px));
 }
 
 * {
@@ -426,6 +426,7 @@ html[lang="en"] .btn-next {
     width: calc(1000 * var(--scale));
     border-radius: calc(20 * var(--scale));
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
@@ -439,6 +440,41 @@ html[lang="en"] .btn-next {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+/* Crop UI */
+.crop-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    overflow: hidden;
+}
+
+.crop-container canvas {
+    border-radius: calc(10 * var(--scale));
+    box-shadow: 0 0 0 calc(3 * var(--scale)) rgba(117, 85, 42, 0.3);
+    background: repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 0 0 / 20px 20px;
+}
+
+.crop-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(10 * var(--scale));
+    padding: calc(8 * var(--scale)) 0;
+}
+
+.crop-controls input[type="range"] {
+    width: calc(200 * var(--scale));
+    accent-color: var(--primary-color);
+}
+
+.crop-controls span {
+    font-size: calc(18 * var(--scale));
+    color: var(--text-color);
+    min-width: calc(60 * var(--scale));
+    text-align: center;
 }
 
 /* Loading Container */
