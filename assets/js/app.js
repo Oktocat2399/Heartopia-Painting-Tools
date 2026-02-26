@@ -252,20 +252,34 @@ const app = {
             </div>
         `;
 
-        const container = document.getElementById('crop-container');
+        // Wait for layout to be calculated before sizing canvas
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                this._initCropCanvas(img, aspect, imagePreview);
+            });
+        });
+    },
+
+    /**
+     * Initialize crop canvas after layout is ready
+     */
+    _initCropCanvas(img, aspect, imagePreview) {
         const canvas = document.getElementById('crop-canvas');
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const zoomSlider = document.getElementById('crop-zoom');
         const zoomLabel = document.getElementById('crop-zoom-label');
 
         // Size the canvas to fit the preview area
         const previewRect = imagePreview.getBoundingClientRect();
+        const pw = previewRect.width || 500;
+        const ph = previewRect.height || 400;
         let cw, ch;
-        if (previewRect.width / previewRect.height > aspect) {
-            ch = previewRect.height * 0.85;
+        if (pw / ph > aspect) {
+            ch = ph * 0.85;
             cw = ch * aspect;
         } else {
-            cw = previewRect.width * 0.95;
+            cw = pw * 0.95;
             ch = cw / aspect;
         }
         canvas.width = Math.round(cw);
