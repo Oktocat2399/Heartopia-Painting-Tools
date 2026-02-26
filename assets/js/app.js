@@ -638,22 +638,6 @@ const app = {
     }
 };
 
-// Fix --scale for browsers that can't do unitless division in CSS (e.g. Firefox)
-function fixCssScale() {
-    const root = document.documentElement;
-    const test = getComputedStyle(root).getPropertyValue('--scale').trim();
-    // If --scale is not a plain number, compute it via JS
-    if (!test || isNaN(parseFloat(test))) {
-        const update = () => {
-            const cw = Math.min(window.innerWidth, window.innerHeight * 1920 / 1080);
-            root.style.setProperty('--scale', cw / 1920);
-        };
-        update();
-        window.addEventListener('resize', update);
-    }
-}
-fixCssScale();
-
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     // Wait for color loader to be ready
