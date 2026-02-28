@@ -39,6 +39,18 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="./assets/css/style.css">
+    <script>
+    // Firefox cannot resolve calc(N * var(--scale)) when --scale is a CSS calc expression.
+    // Compute --scale via JS and set it as a resolved px value.
+    (function() {
+        function updateScale() {
+            var cw = Math.min(window.innerWidth, window.innerHeight * 1920 / 1080);
+            document.documentElement.style.setProperty('--scale', (cw / 1920) + 'px');
+        }
+        updateScale();
+        window.addEventListener('resize', updateScale);
+    })();
+    </script>
 </head>
 <body>
     <span id="version">v1.0.6</span>
